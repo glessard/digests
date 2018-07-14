@@ -1,0 +1,43 @@
+//
+//  DigestAlgorithms.swift
+//  Digests
+//
+//  Created by Guillaume Lessard on 7/13/18.
+//  Copyright © 2018 Guillaume Lessard. All rights reserved.
+//
+
+#if canImport(CommonCrypto)
+import CommonCrypto
+#else
+#if swift(>=4.2)
+#error("This package requires CommonCrypto")
+#endif
+#endif
+% for (algorithm, state) in [('MD2','MD2'), ('MD4','MD4'), ('MD5','MD5'), ('SHA1','SHA1'), ('SHA224','SHA256'), ('SHA256','SHA256'), ('SHA384','SHA512'), ('SHA512','SHA512')]:
+
+public struct ${algorithm}: DigestAlgorithm
+{
+  private var state = CC_${state}state_st()
+  private var finalized = false
+
+  public init()
+  {
+    CC_${algorithm}_Init(&state)
+  }
+
+  public mutating func combine(bytes: UnsafeRawBufferPointer)
+  {
+    assert(!finalized, "attempted to add to a finalized DigestAlgorithm in \(#function)")
+    CC_${algorithm}_Update(&state, bytes.baseAddress, CC_LONG(bytes.count))
+  }
+
+  public mutating func finalize() -> [UInt8]
+  {
+    assert(!finalized, "attempted to finalize a finalized DigestAlgorithm in \(#function)")
+    var bytes = Array<UInt8>(repeating: 0, count: Int(CC_${algorithm}_DIGEST_LENGTH))
+    CC_${algorithm}_Final(&bytes, &state)
+    finalized = true
+    return bytes
+  }
+}
+% end # for
