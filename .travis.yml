@@ -1,0 +1,10 @@
+language: swift
+
+matrix:
+  include:
+    - os: osx
+      osx_image: xcode9.4
+
+script:
+  - /bin/bash Tests/test-gyb.sh
+  - /bin/bash Tests/test-script.sh
