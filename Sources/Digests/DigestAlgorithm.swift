@@ -24,7 +24,11 @@ extension DigestAlgorithm
 
   public mutating func combine(with data: Data)
   {
+#if swift(>=5.0)
+    data.withUnsafeBytes { combine(bytes: $0) }
+#else
     data.withUnsafeBytes { combine(bytes: UnsafeRawBufferPointer(start: $0, count: data.count)) }
+#endif
   }
 
   public mutating func combine<T>(with bytesOf: UnsafeBufferPointer<T>)

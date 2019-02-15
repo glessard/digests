@@ -56,19 +56,23 @@ final class DigestsTests: XCTestCase
   func test1ShotURBP()
   {
     let data = text.data(using: .utf8) ?? Data()
+#if swift(>=5.0)
+    let digest = data.withUnsafeBytes { SHA512.digest(bytes: $0) }
+#else
     let digest = data.withUnsafeBytes {
       SHA512.digest(bytes: UnsafeRawBufferPointer(start: $0, count: data.count))
     }
+#endif
     XCTAssert(digest.hexString() == SHA512Digest)
   }
 
   func testHashBuffer()
   {
-    let data = text.data(using: .utf8) ?? Data()
-    let digest = data.withUnsafeBytes {
-      (pointer: UnsafePointer<UInt8>) -> Digest in
+    let data = text.data(using: .utf8).map(Array.init) ?? []
+    let digest = data.withUnsafeBufferPointer {
+      buffer -> Digest in
       var generator = SHA512()
-      generator.combine(with: UnsafeBufferPointer(start: pointer, count: data.count))
+      generator.combine(with: buffer)
       return generator.digest()
     }
     XCTAssert(digest.hexString() == SHA512Digest)
