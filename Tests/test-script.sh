@@ -24,10 +24,6 @@ for LANGUAGE_VERSION in $VERSIONS
 do
   echo "" # add a small visual separation
   echo "Testing in compatibility mode for Swift ${LANGUAGE_VERSION}"
-  if [[ "${LANGUAGE_VERSION}" = "3" ]]
-  then
-    TEST_OPTIONS=""
-  fi
   swift package reset
   rm -f Package.resolved
   swift test ${TEST_OPTIONS} -Xswiftc -swift-version -Xswiftc ${LANGUAGE_VERSION}
