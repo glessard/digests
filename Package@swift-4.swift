@@ -7,7 +7,7 @@ let package = Package(
   name: "Digests",
   products: [
     .library(name: "Digests", targets: ["Digests"]),
-    ],
+  ],
   dependencies: [
     .package(url: "https://github.com/IBM-Swift/CommonCrypto", from: "1.0.0")
   ],
